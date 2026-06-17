@@ -1,0 +1,16 @@
+node_modules/
+.env
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+.playwright-cli/
+downloads/
+*.log
+.DS_Store
+
+# IDE
+.idea/
+
+# Locally-installed agent tooling (not part of the deliverable)
+.claude/
