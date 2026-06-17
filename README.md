@@ -132,5 +132,11 @@ npx playwright show-report
 ## Continuous integration
 
 `.github/workflows/e2e.yml` installs dependencies and browsers and runs the suite headless
-on every push/PR. Provide the portal URL through a repository secret named `BASE_URL`; the
-report is uploaded as a build artifact.
+on every push/PR. Provide the portal URL through a repository secret named `BASE_URL`.
+
+The HTML report is published to **GitHub Pages** after each run (even on failure):
+
+- **https://ropavlov.github.io/wallpaper-e2e/**
+
+This requires Pages to be enabled once: repo **Settings → Pages → Build and deployment →
+Source: GitHub Actions**.
