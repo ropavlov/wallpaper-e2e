@@ -33,6 +33,8 @@ export interface WebUi {
   all(selector: string): Promise<UiElement[]>;
   /** True if the URL matches the pattern within timeoutMs (bounded, never hangs). */
   urlBecomes(pattern: RegExp | string, timeoutMs: number): Promise<boolean>;
+  /** Best-effort wait for the page to finish loading (proceeds on timeout). */
+  waitForReady(timeoutMs: number): Promise<void>;
   /** Wait until at least one element matching the selector is visible. */
   waitForVisible(selector: string): Promise<void>;
   /** True if an element matching the selector becomes visible within timeoutMs. */

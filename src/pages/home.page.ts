@@ -1,4 +1,9 @@
-import { CONSENT_WAIT_MS, NAV_WAIT_MS, SEARCH_SUBMIT_ATTEMPTS } from '../data/testData';
+import {
+  CONSENT_WAIT_MS,
+  NAV_WAIT_MS,
+  PAGE_READY_WAIT_MS,
+  SEARCH_SUBMIT_ATTEMPTS,
+} from '../data/testData';
 import { BasePage } from './base.page';
 
 /** The browse/search entry point of the portal. */
@@ -19,7 +24,9 @@ export class HomePage extends BasePage {
    */
   async search(keyword: string): Promise<void> {
     for (let attempt = 0; attempt < SEARCH_SUBMIT_ATTEMPTS; attempt++) {
-      // Re-fill each attempt: a pre-hydration submit can reload and clear the input.
+      // Wait for 'load' so we submit a hydrated form (a pre-hydration submit
+      // triggers a native reload that clears the input), then re-fill + submit.
+      await this.ui.waitForReady(PAGE_READY_WAIT_MS);
       await this.ui.fill(this.searchInput, keyword);
       await this.ui.submitForm(this.searchInput);
       if (await this.ui.urlBecomes(this.resultsUrl, NAV_WAIT_MS)) {

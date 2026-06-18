@@ -91,6 +91,14 @@ export class PlaywrightWebUi implements WebUi {
     }
   }
 
+  async waitForReady(timeoutMs: number): Promise<void> {
+    try {
+      await this.page.waitForLoadState('load', { timeout: timeoutMs });
+    } catch {
+      // Ad traffic can delay 'load' — proceed best-effort.
+    }
+  }
+
   async waitForVisible(selector: string): Promise<void> {
     await this.firstVisible(selector);
   }
