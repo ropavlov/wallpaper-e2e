@@ -7,6 +7,7 @@ import {
   DOWNLOAD_MODAL_WAIT_MS,
   DOWNLOAD_TRIGGER_ATTEMPTS,
   DOWNLOAD_WAIT_MS,
+  EXPECT_REAL_DOWNLOAD,
 } from '../src/data/testData';
 
 test.describe('Download a free wallpaper', () => {
@@ -18,10 +19,12 @@ test.describe('Download a free wallpaper', () => {
     await searchResults.openFor(DEFAULT_KEYWORD);
     await searchResults.openFirstFree();
 
-    // Listen before triggering; trigger retries through SSR hydration.
-    const pendingDownload = ui.waitForDownload(DOWNLOAD_WAIT_MS);
+    // Headed runs: attach the download listener before triggering, to capture
+    // the ad-served file. CI/headless: no file comes, so skip the wait entirely.
+    // triggerDownload retries the click through SSR hydration.
+    const pendingDownload = EXPECT_REAL_DOWNLOAD ? ui.waitForDownload(DOWNLOAD_WAIT_MS) : null;
     const initiated = await details.triggerDownload(DOWNLOAD_TRIGGER_ATTEMPTS, DOWNLOAD_MODAL_WAIT_MS);
-    const download = await pendingDownload;
+    const download = pendingDownload ? await pendingDownload : null;
 
     if (download) {
       // Ad served: verify the real file on disk.
@@ -35,7 +38,7 @@ test.describe('Download a free wallpaper', () => {
         extension,
       );
     } else {
-      // No file (ad didn't serve): assert the download was at least initiated.
+      // CI/headless (or a no-show ad): assert the download was initiated.
       expect(
         initiated,
         'Expected either a downloaded file or the ad-gated download modal to appear',
