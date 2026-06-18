@@ -1,5 +1,5 @@
-import { UiElement } from '../core/web-ui';
-import { CONSENT_WAIT_MS } from '../data/test-data';
+import { UiElement } from '../core/webUi';
+import { CONSENT_WAIT_MS } from '../data/testData';
 import { BasePage } from './base.page';
 
 /** Wallpaper results grid; classifies cards as free or premium by the crown badge. */

@@ -1,4 +1,4 @@
-import { CONSENT_WAIT_MS } from '../data/test-data';
+import { CONSENT_WAIT_MS } from '../data/testData';
 import { BasePage } from './base.page';
 
 /** The browse/search entry point of the portal. */

@@ -1,13 +1,13 @@
 import { existsSync, statSync } from 'node:fs';
 import { extname, join } from 'node:path';
-import { test, expect } from '../src/fixtures/test-fixtures';
+import { test, expect } from '../src/fixtures/testFixtures';
 import {
   ACCEPTED_IMAGE_EXTENSIONS,
   DEFAULT_KEYWORD,
   DOWNLOAD_MODAL_WAIT_MS,
   DOWNLOAD_TRIGGER_ATTEMPTS,
   DOWNLOAD_WAIT_MS,
-} from '../src/data/test-data';
+} from '../src/data/testData';
 
 test.describe('Download a free wallpaper', () => {
   test('TC3: downloading a free wallpaper delivers an image file (or initiates the ad-gated download)', async ({

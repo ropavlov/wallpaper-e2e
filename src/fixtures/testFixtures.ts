@@ -1,9 +1,9 @@
 import { test as base, expect } from '@playwright/test';
-import { PlaywrightWebUi } from '../core/playwright-web-ui';
-import { WebUi } from '../core/web-ui';
+import { PlaywrightWebUi } from '../core/playwrightWebUi';
+import { WebUi } from '../core/webUi';
 import { HomePage } from '../pages/home.page';
-import { SearchResultsPage } from '../pages/search-results.page';
-import { WallpaperDetailsPage } from '../pages/wallpaper-details.page';
+import { SearchResultsPage } from '../pages/searchResults.page';
+import { WallpaperDetailsPage } from '../pages/wallpaperDetails.page';
 
 /** Composition root: builds PlaywrightWebUi and injects page objects into specs. */
 type Fixtures = {

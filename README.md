@@ -18,23 +18,23 @@ The driver is isolated to a single file. Layers depend strictly downward:
 ```
 tests/ (specs — no selectors, no driver)
   → src/pages/ (page objects — hold selectors, no driver)
-    → src/core/web-ui.ts (WebUi / UiElement — driver-agnostic interfaces)
-      → src/core/playwright-web-ui.ts (the ONLY file that imports Playwright)
+    → src/core/webUi.ts (WebUi / UiElement — driver-agnostic interfaces)
+      → src/core/playwrightWebUi.ts (the ONLY file that imports Playwright)
 ```
 
 - Specs use injected page objects and `expect` only.
 - Page objects keep their selectors private and depend only on the `WebUi` abstraction.
-- `src/fixtures/test-fixtures.ts` is the composition root: it builds `PlaywrightWebUi`
+- `src/fixtures/testFixtures.ts` is the composition root: it builds `PlaywrightWebUi`
   from Playwright's `page` and injects the page objects.
 
 ```
 .
-├── tests/                      search.spec.ts, free-vs-premium.spec.ts, download.spec.ts
+├── tests/                      search.spec.ts, freeVsPremium.spec.ts, download.spec.ts
 ├── src/
-│   ├── core/                   web-ui.ts, playwright-web-ui.ts
-│   ├── pages/                  base/home/search-results/wallpaper-details page objects
-│   ├── fixtures/               test-fixtures.ts
-│   └── data/                   test-data.ts
+│   ├── core/                   webUi.ts, playwrightWebUi.ts
+│   ├── pages/                  base/home/searchResults/wallpaperDetails page objects
+│   ├── fixtures/               testFixtures.ts
+│   └── data/                   testData.ts
 ├── playwright.config.ts
 ├── .github/workflows/e2e.yml
 ├── .env.example

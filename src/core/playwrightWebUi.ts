@@ -1,5 +1,5 @@
 import { Download, Locator, Page } from '@playwright/test';
-import { DownloadInfo, UiElement, WebUi } from './web-ui';
+import { DownloadInfo, UiElement, WebUi } from './webUi';
 
 /** The ONLY module that references the browser driver. */
 

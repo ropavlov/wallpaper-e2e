@@ -1,5 +1,5 @@
-import { test, expect } from '../src/fixtures/test-fixtures';
-import { DEFAULT_KEYWORD } from '../src/data/test-data';
+import { test, expect } from '../src/fixtures/testFixtures';
+import { DEFAULT_KEYWORD } from '../src/data/testData';
 
 test.describe('Wallpaper search', () => {
   test('TC1: searching by keyword returns wallpaper results', async ({ home, searchResults, ui }) => {

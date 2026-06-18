@@ -1,4 +1,4 @@
-import { WebUi } from '../core/web-ui';
+import { WebUi } from '../core/webUi';
 
 /** Base for all page objects: holds the driver-agnostic WebUi, no driver type. */
 export abstract class BasePage {

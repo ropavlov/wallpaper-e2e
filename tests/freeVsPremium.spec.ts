@@ -1,5 +1,5 @@
-import { test, expect } from '../src/fixtures/test-fixtures';
-import { DEFAULT_KEYWORD } from '../src/data/test-data';
+import { test, expect } from '../src/fixtures/testFixtures';
+import { DEFAULT_KEYWORD } from '../src/data/testData';
 
 test.describe('Free vs premium classification', () => {
   test('TC2: results contain free items and grid classification matches the detail page', async ({
