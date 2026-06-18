@@ -14,12 +14,13 @@ if (!baseURL) {
 
 export default defineConfig({
   testDir: './tests',
-  // Serial: the ad-gated download needs its headed window focused/visible for
-  // the ad to register; background windows never download. See README.
-  fullyParallel: false,
+  // Local: serial — the ad-gated download needs its headed window focused for the
+  // ad to register. CI: headless (no real ad → "initiated" branch), so run in
+  // parallel for speed. See README.
+  fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: 1,
+  workers: process.env.CI ? undefined : 1,
   reporter: [['html', { open: 'never' }], ['list']],
   // Generous timeout: the free download is gated behind a ~13s ad countdown.
   timeout: 90_000,
