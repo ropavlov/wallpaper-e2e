@@ -13,7 +13,8 @@ export interface DownloadInfo {
 
 /** A handle to a single element (or the first match of a selector). */
 export interface UiElement {
-  click(): Promise<void>;
+  /** Click the element; optionally bound the actionability wait with timeoutMs. */
+  click(timeoutMs?: number): Promise<void>;
   text(): Promise<string>;
   isVisible(): Promise<boolean>;
   attribute(name: string): Promise<string | null>;
@@ -26,10 +27,12 @@ export interface WebUi {
   open(path: string): Promise<void>;
   currentUrl(): string;
   fill(selector: string, value: string): Promise<void>;
-  press(selector: string, key: string): Promise<void>;
+  /** Submit the form that contains the first element matching the selector. */
+  submitForm(selector: string): Promise<void>;
   el(selector: string): UiElement;
   all(selector: string): Promise<UiElement[]>;
-  waitForUrl(pattern: RegExp | string): Promise<void>;
+  /** True if the URL matches the pattern within timeoutMs (bounded, never hangs). */
+  urlBecomes(pattern: RegExp | string, timeoutMs: number): Promise<boolean>;
   /** Wait until at least one element matching the selector is visible. */
   waitForVisible(selector: string): Promise<void>;
   /** True if an element matching the selector becomes visible within timeoutMs. */

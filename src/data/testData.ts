@@ -22,3 +22,12 @@ export const DOWNLOAD_TRIGGER_ATTEMPTS = 5;
 
 /** How long to wait for the consent dialog at an entry navigation (ms). */
 export const CONSENT_WAIT_MS = 15_000;
+
+/** Max search submits (covers an Enter pressed before SSR hydration). */
+export const SEARCH_SUBMIT_ATTEMPTS = 5;
+
+/** Per-attempt wait for the results navigation after submitting search (ms). */
+export const NAV_WAIT_MS = 3_000;
+
+/** Bounded timeout for the Download click so an obscured button fails fast (ms). */
+export const DOWNLOAD_CLICK_TIMEOUT_MS = 8_000;

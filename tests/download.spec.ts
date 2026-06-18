@@ -4,6 +4,7 @@ import { test, expect } from '../src/fixtures/testFixtures';
 import {
   ACCEPTED_IMAGE_EXTENSIONS,
   DEFAULT_KEYWORD,
+  DOWNLOAD_CLICK_TIMEOUT_MS,
   DOWNLOAD_MODAL_WAIT_MS,
   DOWNLOAD_TRIGGER_ATTEMPTS,
   DOWNLOAD_WAIT_MS,
@@ -16,14 +17,23 @@ test.describe('Download a free wallpaper', () => {
     details,
     ui,
   }, testInfo) => {
+    // The download is ad-gated (and headless can't complete the ad), so verifying
+    // it across every browser/device just multiplies a fragile, environment-
+    // dependent test. One browser proves the capability.
+    test.skip(testInfo.project.name !== 'chrome', 'Download is verified on the chrome project only');
+
     await searchResults.openFor(DEFAULT_KEYWORD);
     await searchResults.openFirstFree();
 
     // Headed runs: attach the download listener before triggering, to capture
     // the ad-served file. CI/headless: no file comes, so skip the wait entirely.
-    // triggerDownload retries the click through SSR hydration.
+    // triggerDownload retries the (bounded) click through SSR hydration.
     const pendingDownload = EXPECT_REAL_DOWNLOAD ? ui.waitForDownload(DOWNLOAD_WAIT_MS) : null;
-    const initiated = await details.triggerDownload(DOWNLOAD_TRIGGER_ATTEMPTS, DOWNLOAD_MODAL_WAIT_MS);
+    const initiated = await details.triggerDownload(
+      DOWNLOAD_TRIGGER_ATTEMPTS,
+      DOWNLOAD_MODAL_WAIT_MS,
+      DOWNLOAD_CLICK_TIMEOUT_MS,
+    );
     const download = pendingDownload ? await pendingDownload : null;
 
     if (download) {

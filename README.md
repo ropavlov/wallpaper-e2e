@@ -89,10 +89,11 @@ npx playwright test --project=mobile-chrome   # Pixel 5 (Android, Chromium)
 npx playwright test --project=mobile-safari   # iPhone 13 (iOS, WebKit)
 ```
 
-The page objects are viewport-aware (they target the *visible* search input and Download
-button, and detect the premium badge by presence rather than visibility), so the same specs
-run on desktop and mobile. Only `chrome` downloads the **real file** for TC3 (see below);
-the other projects verify TC3 via the *download-initiated* fallback.
+The page objects are viewport-aware (they target the *visible* search input, submit the
+search form directly — Enter doesn't submit on WebKit — and detect the premium badge by
+presence), so the same specs run on desktop and mobile. **TC1/TC2 run on all five projects;
+TC3 (download) runs on `chrome` only** — the ad-gated download is fragile and environment-
+dependent, so it's verified on one browser rather than multiplied across all five.
 
 ### Useful variants
 
@@ -110,13 +111,13 @@ and viewed**. Ads do not serve to a headless browser, so:
 - **Locally**, the `chrome` project runs **headed, in real Chrome** (`channel: 'chrome'`),
   serially (`workers: 1`). The window is foreground, the ad serves, and TC3 downloads and
   verifies the **real file** (exists, non-zero, image extension).
-- **In CI** (`CI` env set), browsers run **headless**. The ad won't serve there — and the
-  `firefox`/`webkit` projects don't get the real file either — so TC3 instead asserts the
-  download was **correctly initiated** (the *"Preparing your download"* modal appears), which
-  proves the user-facing action works. A documented fallback, not a silent skip.
+- **In CI** (`CI` env set), the `chrome` project runs **headless**. The ad won't serve there,
+  so TC3 instead asserts the download was **correctly initiated** (the *"Preparing your
+  download"* modal appears), which proves the user-facing action works.
 
-The detail page is also Next.js SSR + hydration: the Download button renders before its
-click handler binds, so the suite **retries the click** until it takes effect.
+The portal is Next.js SSR + hydration: buttons/forms render before their handlers bind, so
+the suite **retries** the search submit and the Download click (each with a bounded timeout)
+until they take effect — this is what keeps CI fast and stable instead of hanging.
 
 Serial execution is required: with parallel headed windows, only one is foreground, so the
 others' ads never register as viewed and their downloads never start.

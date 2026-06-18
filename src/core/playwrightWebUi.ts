@@ -6,8 +6,8 @@ import { DownloadInfo, UiElement, WebUi } from './webUi';
 class PlaywrightUiElement implements UiElement {
   constructor(private readonly locator: Locator) {}
 
-  async click(): Promise<void> {
-    await this.locator.first().click();
+  async click(timeoutMs?: number): Promise<void> {
+    await this.locator.first().click({ timeout: timeoutMs });
   }
 
   async text(): Promise<string> {
@@ -57,8 +57,16 @@ export class PlaywrightWebUi implements WebUi {
     await this.page.locator(selector).first().fill(value);
   }
 
-  async press(selector: string, key: string): Promise<void> {
-    await this.page.locator(selector).first().press(key);
+  async submitForm(selector: string): Promise<void> {
+    // Submit the enclosing form directly: pressing Enter doesn't submit on
+    // WebKit, and the submit button is hidden on mobile — requestSubmit works
+    // across all browsers/viewports.
+    await this.page.locator(selector).first().evaluate((el) => {
+      const form = el.closest('form');
+      if (form) {
+        form.requestSubmit ? form.requestSubmit() : form.submit();
+      }
+    });
   }
 
   el(selector: string): UiElement {
@@ -70,9 +78,17 @@ export class PlaywrightWebUi implements WebUi {
     return locators.map((locator) => new PlaywrightUiElement(locator));
   }
 
-  async waitForUrl(pattern: RegExp | string): Promise<void> {
-    // 'commit': the ad-heavy portal may never reach the 'load' event.
-    await this.page.waitForURL(pattern, { waitUntil: 'commit' });
+  async urlBecomes(pattern: RegExp | string, timeoutMs: number): Promise<boolean> {
+    try {
+      // 'commit': the ad-heavy portal may never reach the 'load' event.
+      await this.page.waitForURL(pattern, { waitUntil: 'commit', timeout: timeoutMs });
+      return true;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        return false;
+      }
+      throw error;
+    }
   }
 
   async waitForVisible(selector: string): Promise<void> {
