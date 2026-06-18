@@ -20,7 +20,9 @@ export default defineConfig({
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? undefined : 1,
+  // CI: a few parallel workers (cap concurrency so the live portal isn't
+  // overloaded); local: serial for the headed ad-gated download.
+  workers: process.env.CI ? 3 : 1,
   reporter: [['html', { open: 'never' }], ['list']],
   // Generous timeout: the free download is gated behind a ~13s ad countdown.
   timeout: 90_000,
