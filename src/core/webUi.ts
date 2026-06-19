@@ -26,7 +26,8 @@ export interface UiElement {
 export interface WebUi {
   open(path: string): Promise<void>;
   currentUrl(): string;
-  fill(selector: string, value: string): Promise<void>;
+  /** Fill the field; optionally bound the wait for it to be editable with timeoutMs. */
+  fill(selector: string, value: string, timeoutMs?: number): Promise<void>;
   /** Submit the form that contains the first element matching the selector. */
   submitForm(selector: string): Promise<void>;
   el(selector: string): UiElement;

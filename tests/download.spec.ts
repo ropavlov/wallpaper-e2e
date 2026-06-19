@@ -17,11 +17,6 @@ test.describe('Download a free wallpaper', () => {
     details,
     ui,
   }, testInfo) => {
-    // The download is ad-gated (and headless can't complete the ad), so verifying
-    // it across every browser/device just multiplies a fragile, environment-
-    // dependent test. One browser proves the capability.
-    test.skip(testInfo.project.name !== 'chrome', 'Download is verified on the chrome project only');
-
     await searchResults.openFor(DEFAULT_KEYWORD);
     await searchResults.openFirstFree();
 

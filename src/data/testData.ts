@@ -32,5 +32,8 @@ export const NAV_WAIT_MS = 3_000;
 /** Best-effort wait for the page 'load' before submitting (hydration settles after). */
 export const PAGE_READY_WAIT_MS = 5_000;
 
+/** Bounded wait for the search input to be fillable (fails fast after a reload). */
+export const SEARCH_INPUT_TIMEOUT_MS = 5_000;
+
 /** Bounded timeout for the Download click so an obscured button fails fast (ms). */
 export const DOWNLOAD_CLICK_TIMEOUT_MS = 8_000;

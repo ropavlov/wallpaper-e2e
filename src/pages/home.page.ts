@@ -2,6 +2,7 @@ import {
   CONSENT_WAIT_MS,
   NAV_WAIT_MS,
   PAGE_READY_WAIT_MS,
+  SEARCH_INPUT_TIMEOUT_MS,
   SEARCH_SUBMIT_ATTEMPTS,
 } from '../data/testData';
 import { BasePage } from './base.page';
@@ -27,7 +28,13 @@ export class HomePage extends BasePage {
       // Wait for 'load' so we submit a hydrated form (a pre-hydration submit
       // triggers a native reload that clears the input), then re-fill + submit.
       await this.ui.waitForReady(PAGE_READY_WAIT_MS);
-      await this.ui.fill(this.searchInput, keyword);
+      try {
+        // Bounded: after a reload the input is briefly gone — fail fast and retry
+        // rather than blocking on the default 30s fill timeout.
+        await this.ui.fill(this.searchInput, keyword, SEARCH_INPUT_TIMEOUT_MS);
+      } catch {
+        continue;
+      }
       await this.ui.submitForm(this.searchInput);
       if (await this.ui.urlBecomes(this.resultsUrl, NAV_WAIT_MS)) {
         return;
