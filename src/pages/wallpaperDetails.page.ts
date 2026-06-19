@@ -29,7 +29,11 @@ export class WallpaperDetailsPage extends BasePage {
    * so an obscured button fails fast and the loop can retry. Returns whether the
    * modal appeared.
    */
-  async triggerDownload(attempts: number, modalWaitMs: number, clickTimeoutMs: number): Promise<boolean> {
+  async triggerDownload(
+    attempts: number,
+    modalWaitMs: number,
+    clickTimeoutMs: number,
+  ): Promise<boolean> {
     for (let attempt = 0; attempt < attempts; attempt++) {
       // If the modal is already open, don't re-click (the button is now obscured).
       if (await this.ui.el(this.preparingModal).isVisible()) {

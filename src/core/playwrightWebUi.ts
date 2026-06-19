@@ -60,12 +60,15 @@ export class PlaywrightWebUi implements WebUi {
   async submitForm(selector: string): Promise<void> {
     // Submit the enclosing form directly: pressing Enter doesn't submit on WebKit,
     // and the submit button is hidden on mobile — requestSubmit works across engines.
-    await this.page.locator(selector).first().evaluate((el) => {
-      const form = el.closest('form');
-      if (form) {
-        form.requestSubmit ? form.requestSubmit() : form.submit();
-      }
-    });
+    await this.page
+      .locator(selector)
+      .first()
+      .evaluate((el) => {
+        const form = el.closest('form');
+        if (form) {
+          form.requestSubmit ? form.requestSubmit() : form.submit();
+        }
+      });
   }
 
   el(selector: string): UiElement {
