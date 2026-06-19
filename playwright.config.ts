@@ -24,8 +24,9 @@ export default defineConfig({
   // overloaded); local: serial for the headed ad-gated download.
   workers: process.env.CI ? 3 : 1,
   reporter: [['html', { open: 'never' }], ['list']],
-  // Generous timeout: the free download is gated behind a ~13s ad countdown.
-  timeout: 90_000,
+  // Default per-test timeout. The download spec overrides this (it waits on a
+  // ~13s ad countdown) via test.describe.configure.
+  timeout: 60_000,
   expect: { timeout: 15_000 },
   use: {
     baseURL,

@@ -41,7 +41,8 @@ class PlaywrightDownloadInfo implements DownloadInfo {
 }
 
 export class PlaywrightWebUi implements WebUi {
-  private consentDismissed = false;
+  // Session-scoped: the consent dialog appears at most once per browser session.
+  private consentHandled = false;
 
   constructor(private readonly page: Page) {}
 
@@ -65,8 +66,13 @@ export class PlaywrightWebUi implements WebUi {
       .first()
       .evaluate((el) => {
         const form = el.closest('form');
-        if (form) {
-          form.requestSubmit ? form.requestSubmit() : form.submit();
+        if (!form) {
+          throw new Error('submitForm: element has no enclosing <form>');
+        }
+        if (form.requestSubmit) {
+          form.requestSubmit();
+        } else {
+          form.submit();
         }
       });
   }
@@ -93,14 +99,6 @@ export class PlaywrightWebUi implements WebUi {
     }
   }
 
-  async waitForReady(timeoutMs: number): Promise<void> {
-    try {
-      await this.page.waitForLoadState('load', { timeout: timeoutMs });
-    } catch {
-      // Ad traffic can delay 'load' — proceed best-effort.
-    }
-  }
-
   async waitForVisible(selector: string): Promise<void> {
     await this.firstVisible(selector);
   }
@@ -118,12 +116,15 @@ export class PlaywrightWebUi implements WebUi {
   }
 
   async dismissConsent(selector: string, timeoutMs: number): Promise<void> {
-    if (this.consentDismissed) {
+    // Check for the dialog on the first entry navigation only; mark handled up
+    // front so later navigations never re-wait the timeout (whether or not the
+    // dialog actually appeared this session).
+    if (this.consentHandled) {
       return;
     }
+    this.consentHandled = true;
     if (await this.appears(selector, timeoutMs)) {
       await this.page.locator(selector).first().click();
-      this.consentDismissed = true;
     }
   }
 

@@ -12,6 +12,10 @@ import {
 } from '../src/data/testData';
 
 test.describe('Download a free wallpaper', () => {
+  // The download waits on a ~13s ad countdown (and up to 45s for the real file
+  // locally), so it needs more than the default per-test timeout.
+  test.describe.configure({ timeout: 90_000 });
+
   test('TC3: downloading a free wallpaper delivers an image file (or initiates the ad-gated download)', async ({
     searchResults,
     details,

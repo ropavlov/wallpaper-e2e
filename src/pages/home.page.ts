@@ -1,7 +1,6 @@
 import {
   CONSENT_WAIT_MS,
   NAV_WAIT_MS,
-  PAGE_READY_WAIT_MS,
   SEARCH_INPUT_TIMEOUT_MS,
   SEARCH_SUBMIT_ATTEMPTS,
 } from '../data/testData';
@@ -21,19 +20,20 @@ export class HomePage extends BasePage {
 
   /**
    * Type a keyword and submit the search form. The page hydrates after SSR, so
-   * an early submit can be a no-op (no navigation); retry until results load.
+   * an early submit can be a no-op (or trigger a native reload that clears the
+   * input); retry the fill + submit until the results page loads.
    */
   async search(keyword: string): Promise<void> {
     for (let attempt = 0; attempt < SEARCH_SUBMIT_ATTEMPTS; attempt++) {
-      // Wait for 'load' so we submit a hydrated form (a pre-hydration submit
-      // triggers a native reload that clears the input), then re-fill + submit.
-      await this.ui.waitForReady(PAGE_READY_WAIT_MS);
       try {
-        // Bounded: after a reload the input is briefly gone — fail fast and retry
-        // rather than blocking on the default 30s fill timeout.
+        // Bounded so that after a reload, when the input is briefly gone, we fail
+        // fast and retry instead of blocking on the default 30s fill timeout.
         await this.ui.fill(this.searchInput, keyword, SEARCH_INPUT_TIMEOUT_MS);
-      } catch {
-        continue;
+      } catch (error) {
+        if (error instanceof Error && error.name === 'TimeoutError') {
+          continue; // input not ready yet — retry
+        }
+        throw error;
       }
       await this.ui.submitForm(this.searchInput);
       if (await this.ui.urlBecomes(this.resultsUrl, NAV_WAIT_MS)) {
