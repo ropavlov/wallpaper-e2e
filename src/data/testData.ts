@@ -15,10 +15,14 @@ export const DOWNLOAD_WAIT_MS = 45_000;
 export const EXPECT_REAL_DOWNLOAD = !process.env.CI;
 
 /** Per-attempt wait for the "Preparing your download" modal to appear (ms). */
-export const DOWNLOAD_MODAL_WAIT_MS = 3_000;
+export const DOWNLOAD_MODAL_WAIT_MS = 4_000;
 
-/** Max Download (re-)clicks; covers a no-op click before SSR hydration. */
-export const DOWNLOAD_TRIGGER_ATTEMPTS = 5;
+/**
+ * Max Download (re-)clicks before the modal appears. Each click is a no-op until
+ * the button's onClick hydrates, so the budget (attempts × modal wait ≈ 40s) must
+ * comfortably exceed hydration time on slow CI runners.
+ */
+export const DOWNLOAD_TRIGGER_ATTEMPTS = 10;
 
 /** How long to wait for the consent dialog at an entry navigation (ms). */
 export const CONSENT_WAIT_MS = 15_000;
