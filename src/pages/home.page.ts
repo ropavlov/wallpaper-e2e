@@ -9,7 +9,7 @@ import { BasePage } from './base.page';
 /** The browse/search entry point of the portal. */
 export class HomePage extends BasePage {
   private readonly browsePath = '/ringtones-and-wallpapers';
-  // Two search inputs (mobile + desktop); use whichever is visible.
+  // Two inputs (mobile/desktop); use the visible one.
   private readonly searchInput = '#search:visible';
   private readonly resultsUrl = /\/find\//;
 
@@ -18,20 +18,15 @@ export class HomePage extends BasePage {
     await this.ui.dismissConsent(BasePage.CONSENT_ACCEPT, CONSENT_WAIT_MS);
   }
 
-  /**
-   * Type a keyword and submit the search form. The page hydrates after SSR, so
-   * an early submit can be a no-op (or trigger a native reload that clears the
-   * input); retry the fill + submit until the results page loads.
-   */
+  /** Fill + submit, retrying through SSR hydration (an early submit reloads/no-ops). */
   async search(keyword: string): Promise<void> {
     for (let attempt = 0; attempt < SEARCH_SUBMIT_ATTEMPTS; attempt++) {
       try {
-        // Bounded so that after a reload, when the input is briefly gone, we fail
-        // fast and retry instead of blocking on the default 30s fill timeout.
+        // Bounded: after a reload the input is briefly gone — fail fast and retry.
         await this.ui.fill(this.searchInput, keyword, SEARCH_INPUT_TIMEOUT_MS);
       } catch (error) {
         if (error instanceof Error && error.name === 'TimeoutError') {
-          continue; // input not ready yet — retry
+          continue; // input not ready — retry
         }
         throw error;
       }

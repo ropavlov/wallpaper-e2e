@@ -5,9 +5,9 @@ import { BasePage } from './base.page';
 /** Wallpaper results grid; classifies cards as free or premium by the crown badge. */
 export class SearchResultsPage extends BasePage {
   private readonly wallpaperGridPath = '/wallpapers';
-  // A result card is an anchor pointing at a wallpaper detail page.
+  // Result card = anchor to a detail page.
   private readonly cardLink = 'a[href^="/wallpapers/"]';
-  // Premium crown badge: `premium*.png` background-image (only reliable signal).
+  // Premium crown badge (premium*.png bg-image; the only reliable signal).
   private readonly premiumBadge = '[style*="premium" i]';
 
   /** Open the wallpaper-scoped results grid for a keyword. */
@@ -48,7 +48,7 @@ export class SearchResultsPage extends BasePage {
     await this.openCard(first);
   }
 
-  // Navigate by href, not click: some cards' ad interstitial hijacks the click.
+  // Open by href, not click: a card's ad interstitial can hijack the click.
   private async openCard(card: UiElement): Promise<void> {
     const href = await card.attribute('href');
     if (!href) {

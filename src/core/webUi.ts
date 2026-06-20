@@ -1,7 +1,4 @@
-/**
- * Driver-agnostic UI abstraction: primitives and handle interfaces only, never
- * a concrete driver type, so page objects depend on this and never the driver.
- */
+/** Driver-agnostic UI abstraction — page objects depend on this, never the driver. */
 
 /** A captured file download. */
 export interface DownloadInfo {

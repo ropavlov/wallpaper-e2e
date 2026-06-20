@@ -7,10 +7,8 @@ test.describe('Wallpaper search', () => {
     searchResults,
     ui,
   }, testInfo) => {
-    // The search box's submit depends on React hydration of a no-action form. On
-    // mobile headless against the live site this is timing-flaky on slow CI
-    // runners (see README). Search is verified on desktop; mobile rendering and
-    // free/premium classification are still covered by TC2.
+    // Mobile search-box submit is hydration-flaky headless on slow CI (see README);
+    // verified on desktop, mobile covered by TC2.
     test.skip(
       testInfo.project.name.startsWith('mobile'),
       'Search box verified on desktop projects',

@@ -11,7 +11,7 @@ test.describe('Free vs premium classification', () => {
     const free = await searchResults.freeResults();
     expect(free.length).toBeGreaterThanOrEqual(1);
 
-    // A card classified free in the grid must not be premium on its detail page.
+    // Grid-free must not be premium on its detail page.
     await searchResults.openFirstFree();
     expect(await details.isPremium()).toBe(false);
 
@@ -19,7 +19,7 @@ test.describe('Free vs premium classification', () => {
     const premium = await searchResults.premiumResults();
     expect(premium.length).toBeGreaterThanOrEqual(1);
 
-    // A card classified premium in the grid must be premium on its detail page.
+    // Grid-premium must be premium on its detail page.
     await searchResults.openFirstPremium();
     expect(await details.isPremium()).toBe(true);
   });

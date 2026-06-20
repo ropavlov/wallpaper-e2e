@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
-// Load BASE_URL from a local, git-ignored .env file.
+// Load BASE_URL from a git-ignored .env.
 dotenv.config();
 
 const baseURL = process.env.BASE_URL;
@@ -14,18 +14,14 @@ if (!baseURL) {
 
 export default defineConfig({
   testDir: './tests',
-  // Local: serial — the ad-gated download needs its headed window focused for the
-  // ad to register. CI: headless (no real ad → "initiated" branch), so run in
-  // parallel for speed. See README.
+  // Serial locally (headed ad needs a focused window); parallel in CI. See README.
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  // CI: a few parallel workers (cap concurrency so the live portal isn't
-  // overloaded); local: serial for the headed ad-gated download.
+  // Cap CI concurrency so the live portal isn't overloaded; serial locally.
   workers: process.env.CI ? 3 : 1,
   reporter: [['html', { open: 'never' }], ['list']],
-  // Default per-test timeout. The download spec overrides this (it waits on a
-  // ~13s ad countdown) via test.describe.configure.
+  // Default; the download spec overrides to 90s.
   timeout: 60_000,
   expect: { timeout: 15_000 },
   use: {
@@ -36,10 +32,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  // Pick a browser with `npx playwright test --project=<name>`; no flag runs all.
+  // Pick one with `--project=<name>`; no flag runs all.
   projects: [
     {
-      // Real Chrome locally (ad serves the file), Chromium in CI. See README.
+      // Real Chrome locally (ad serves the file), Chromium in CI.
       name: 'chrome',
       use: { ...devices['Desktop Chrome'], channel: process.env.CI ? undefined : 'chrome' },
     },

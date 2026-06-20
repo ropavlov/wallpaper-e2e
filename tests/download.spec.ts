@@ -12,8 +12,7 @@ import {
 } from '../src/data/testData';
 
 test.describe('Download a free wallpaper', () => {
-  // The download waits on a ~13s ad countdown (and up to 45s for the real file
-  // locally), so it needs more than the default per-test timeout.
+  // Ad countdown + up to 45s for the real file — needs more than the default timeout.
   test.describe.configure({ timeout: 90_000 });
 
   test('TC3: downloading a free wallpaper delivers an image file (or initiates the ad-gated download)', async ({
@@ -21,17 +20,14 @@ test.describe('Download a free wallpaper', () => {
     details,
     ui,
   }, testInfo) => {
-    // The download is ad-gated and its modal/file depend on slow ad+hydration
-    // timing, which isn't reliable across all browsers on slow CI runners (see
-    // README). Verified on chrome (real file locally, initiated in CI).
+    // Ad-gated download is timing-flaky across browsers on slow CI (see README);
+    // verified on chrome (real file locally, initiated in CI).
     test.skip(testInfo.project.name !== 'chrome', 'Download verified on the chrome project');
 
     await searchResults.openFor(DEFAULT_KEYWORD);
     await searchResults.openFirstFree();
 
-    // Headed runs: attach the download listener before triggering, to capture
-    // the ad-served file. CI/headless: no file comes, so skip the wait entirely.
-    // triggerDownload retries the (bounded) click through SSR hydration.
+    // Headed: listen for the real file. CI/headless: skip the wait (no file comes).
     const pendingDownload = EXPECT_REAL_DOWNLOAD ? ui.waitForDownload(DOWNLOAD_WAIT_MS) : null;
     const initiated = await details.triggerDownload(
       DOWNLOAD_TRIGGER_ATTEMPTS,

@@ -41,7 +41,7 @@ class PlaywrightDownloadInfo implements DownloadInfo {
 }
 
 export class PlaywrightWebUi implements WebUi {
-  // Session-scoped: the consent dialog appears at most once per browser session.
+  // Consent dialog appears at most once per session.
   private consentHandled = false;
 
   constructor(private readonly page: Page) {}
@@ -59,8 +59,7 @@ export class PlaywrightWebUi implements WebUi {
   }
 
   async submitForm(selector: string): Promise<void> {
-    // Submit the enclosing form directly: pressing Enter doesn't submit on WebKit,
-    // and the submit button is hidden on mobile — requestSubmit works across engines.
+    // requestSubmit: Enter doesn't submit on WebKit, submit button hidden on mobile.
     await this.page
       .locator(selector)
       .first()
@@ -88,7 +87,7 @@ export class PlaywrightWebUi implements WebUi {
 
   async urlBecomes(pattern: RegExp | string, timeoutMs: number): Promise<boolean> {
     try {
-      // 'commit': the ad-heavy portal may never reach the 'load' event.
+      // 'commit': ad-heavy pages may never fire 'load'.
       await this.page.waitForURL(pattern, { waitUntil: 'commit', timeout: timeoutMs });
       return true;
     } catch (error) {
@@ -116,9 +115,7 @@ export class PlaywrightWebUi implements WebUi {
   }
 
   async dismissConsent(selector: string, timeoutMs: number): Promise<void> {
-    // Check for the dialog on the first entry navigation only; mark handled up
-    // front so later navigations never re-wait the timeout (whether or not the
-    // dialog actually appeared this session).
+    // Check once on the first entry nav; mark handled up front so later navs don't re-wait.
     if (this.consentHandled) {
       return;
     }
@@ -128,13 +125,13 @@ export class PlaywrightWebUi implements WebUi {
     }
   }
 
-  /** Wait for the first match of a selector to be visible (optional timeout). */
+  /** First match visible (optional timeout). */
   private firstVisible(selector: string, timeoutMs?: number): Promise<void> {
     return this.page.locator(selector).first().waitFor({ state: 'visible', timeout: timeoutMs });
   }
 
   async waitForDownload(timeoutMs: number): Promise<DownloadInfo | null> {
-    // Context-level so popups/new tabs count; listener attaches before the trigger.
+    // Context-level so popups count; attach before triggering.
     try {
       const download = await this.page.context().waitForEvent('download', { timeout: timeoutMs });
       return new PlaywrightDownloadInfo(download);
