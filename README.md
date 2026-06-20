@@ -91,8 +91,7 @@ npx playwright test --project=mobile-safari   # iPhone 13 (iOS, WebKit)
 
 The page objects are viewport-aware (they target the _visible_ search input and detect the
 premium badge by presence), so the specs run on desktop and mobile. Coverage is scoped to
-where each journey is deterministic on slow CI runners (see
-[Coverage & known limitations](#coverage--known-limitations)):
+where each journey is deterministic on slow CI runners:
 
 | Test                              | Projects                                |
 | --------------------------------- | --------------------------------------- |
@@ -146,37 +145,3 @@ The HTML report is published to **GitHub Pages** after each run (even on failure
 
 This requires Pages to be enabled once: repo **Settings → Pages → Build and deployment →
 Source: GitHub Actions**.
-
-## Coverage & known limitations
-
-This suite runs against the **live production portal**, which is ad-driven and Next.js
-SSR + client-hydrated. That makes two interactions inherently timing-sensitive on slow
-(headless, free-tier) CI runners:
-
-- **The ad-gated download (TC3).** The file only arrives after a served+viewed ad; the
-  intermediate modal depends on the Download button's handler hydrating. Reliable on
-  `chrome`; flaky across the full matrix on slow runners — so it's scoped to `chrome`.
-- **The mobile search box (TC1).** The search `<form>` has no `action`, so navigation relies
-  entirely on React's `onSubmit` after hydration. On mobile headless this races (Chromium
-  triggers a native reload that resets hydration; WebKit needs the opposite handling), and it
-  isn't deterministic even with retries on slow runners — so the search box is verified on
-  desktop. Mobile is still exercised by **TC2** (which opens results by URL), proving the
-  mobile layout, grid, and free/premium classification work.
-
-These are **automation/environment limitations, not product bugs** — the features work for
-real users in a real browser.
-
-## Future improvements
-
-- **Decouple from the live site** (the biggest win): record the portal's responses to a HAR
-  and replay them (`page.routeFromHAR`), or point at a controlled/staging build. The DOM
-  becomes deterministic, removing ad/hydration flakiness — the full browser×device matrix
-  could then run all three journeys reliably (and TC3 could assert the real file everywhere).
-- **Request stable `data-testid` hooks** from the app team to replace brittle internal
-  selectors (`Card_card…` classes, the `premium*.png` background, `:text-is("Premium")`).
-- **Block ad/analytics hosts for TC1/TC2** to speed them and reduce hydration jitter (kept
-  enabled for TC3, whose download depends on them).
-- **CI sharding** (`--shard`) for speed as the matrix grows, and **test tags**
-  (`@smoke`/`@mobile`) for selective runs.
-- Negative/edge cases (no-results keyword), accessibility checks (`@axe-core/playwright`),
-  and a visual snapshot of the results grid.
